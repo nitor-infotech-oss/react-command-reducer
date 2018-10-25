@@ -1,0 +1,10 @@
+{
+    "extends": "airbnb",
+    "rules": {
+        "linebreak-style": [1, "windows"],
+        "new-cap": [1, { "newIsCap": false }],
+        "react/prop-types": [1],
+        "react/jsx-filename-extension": [0]
+    },
+    "plugins": ["react", "jsx-a11y", "import"]
+}
