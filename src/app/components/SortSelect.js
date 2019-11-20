@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const sortOrders = [
   {
@@ -26,26 +27,31 @@ const sortFields = [
   },
 ];
 
-const SortSelect = (props) => {
-  this.onSort = (e) => {
-    const sortValue = e.currentTarget.value.split('-');
-    const sortField = sortValue[0];
-    const sortOrder = sortValue[1];
-    props.onSort({ sortField, sortOrder });
-  };
+const applySort = callBack => ({ currentTarget: { value } }) => {
+  const sortValue = value.split('-');
+  const sortField = sortValue[0];
+  const sortOrder = sortValue[1];
+  callBack({ sortField, sortOrder });
+};
 
-  return (
-    <select className="form-control" onChange={this.onSort}>
-      <option>Sort Comments</option>
-      {sortFields.map((sortField, fieldIndex) =>
-        sortOrders.map((sortOrder, sortIndex) => (
-          <option key={`${fieldIndex}-${sortIndex}`} value={`${sortField.field}-${sortOrder.key}`}>
-            {`${sortField.title} ${sortOrder.title}`}
-          </option>
-        )),
-      )}
-    </select>
-  );
+const SortSelect = ({ onSort }) => (
+  <select className="form-control" onChange={applySort(onSort)}>
+    <option>Sort Comments</option>
+    {sortFields.map(sortField =>
+      sortOrders.map(sortOrder => (
+        <option
+          key={`${sortField.field}-${sortOrder.key}`}
+          value={`${sortField.field}-${sortOrder.key}`}
+        >
+          {`${sortField.title} ${sortOrder.title}`}
+        </option>
+      )),
+    )}
+  </select>
+);
+
+SortSelect.propTypes = {
+  onSort: PropTypes.func,
 };
 
 export default SortSelect;

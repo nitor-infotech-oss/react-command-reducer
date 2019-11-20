@@ -10,11 +10,20 @@ export const ActionTypes = {
   SORT_COMMENTS: type('Sort [thread] post comments'),
 };
 
-export const getThread = threadSlug => ({ type: ActionTypes.GET_THREAD, payload: threadSlug });
+export const getThread = threadSlug => ({
+  type: ActionTypes.GET_THREAD,
+  payload: threadSlug,
+});
 
-export const getThreadSuccess = posts => ({ type: ActionTypes.GET_THREAD_SUCCESS, payload: posts });
+export const getThreadSuccess = posts => ({
+  type: ActionTypes.GET_THREAD_SUCCESS,
+  payload: posts,
+});
 
-export const getThreadFail = error => ({ type: ActionTypes.GET_THREAD_FAIL, payload: error });
+export const getThreadFail = error => ({
+  type: ActionTypes.GET_THREAD_FAIL,
+  payload: error,
+});
 
 export const getPost = (threadSlug, postId) => ({
   type: ActionTypes.GET_THREAD_POST,
@@ -29,9 +38,22 @@ export const getPostSuccess = post => ({
   payload: post,
 });
 
-export const getPostFail = error => ({ type: ActionTypes.GET_THREAD_POST_FAIL, payload: error });
+export const getPostFail = error => ({
+  type: ActionTypes.GET_THREAD_POST_FAIL,
+  payload: error,
+});
 
 export const sortComments = sortDetails => ({
   type: ActionTypes.SORT_COMMENTS,
   payload: sortDetails,
 });
+
+export default {
+  getThread,
+  getThreadSuccess,
+  getThreadFail,
+  getPost,
+  getPostSuccess,
+  getPostFail,
+  sortComments,
+}

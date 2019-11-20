@@ -1,19 +1,31 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import { createEpicMiddleware } from 'redux-observable';
-import { persistStore, autoRehydrate } from 'redux-persist';
+import { persistStore, persistCombineReducers } from 'redux-persist';
 
 import applicationReducer from '../reducers/index';
 import rootEpic from '../epics/index';
 
-const epicMiddleware = createEpicMiddleware(rootEpic);
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const epicMiddleware = createEpicMiddleware();
 
 export default async (storage, initialState = {}) => {
-  const store = createStore(
+  const persistReducer = persistCombineReducers(
+    {
+      key: 'root',
+      storage,
+      debug: true,
+    },
     applicationReducer,
-    initialState,
-    compose(applyMiddleware(epicMiddleware), autoRehydrate({ log: false })),
   );
 
-  persistStore(store, { storage });
-  return store;
+  const store = createStore(
+    persistReducer,
+    initialState,
+    composeEnhancers(applyMiddleware(epicMiddleware)),
+  );
+
+  epicMiddleware.run(rootEpic);
+
+  const persistor = persistStore(store);
+  return { store, persistor };
 };

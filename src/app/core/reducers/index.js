@@ -1,11 +1,5 @@
-import { combineReducers } from 'redux';
-
 import threadReducer from './thread';
 
-const reducers = {
+export default {
   thread: threadReducer,
 };
-
-const applicationReducer = combineReducers(reducers);
-
-export default applicationReducer;

@@ -1,12 +1,16 @@
+// import { ajax } from 'rxjs/ajax';
+
+const endPoints = 'https://www.reddit.com/r/';
+
 export default class ThreadService {
   getThread(threadSlug) {
-    return fetch(`https://www.reddit.com/r/${threadSlug}.json`)
+    return fetch(`${endPoints}${threadSlug}.json`)
       .then(response => response.json())
       .catch(this.handleErrors);
   }
 
   getPost(threadSlug, postId) {
-    return fetch(`https://www.reddit.com/r/${threadSlug}/${postId}.json`)
+    return fetch(`${endPoints}${threadSlug}/${postId}.json`)
       .then(response => response.json())
       .catch(this.handleErrors);
   }

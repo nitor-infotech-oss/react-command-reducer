@@ -1,41 +1,56 @@
 import React from 'react';
+import T from 'prop-types';
 
-const Reply = (props) => {
-  if (props.reply.data.ups === undefined) return null;
-  const replyDate = new Date(1000 * props.reply.data.created).toUTCString();
+const Reply = ({ reply, counter }) => {
+  const { ups, created, author, downs, body, replies } = reply.data;
+
+  if (ups === undefined) return null;
+  const replyDate = new Date(1000 * created).toUTCString();
   return (
     <div className="alert text-left border-top-0">
       <small>&#187;</small>
-      {' reply from '}
-      <a href="">{props.reply.data.author}</a>
-      {' on ['}
+      reply from
+      <button type="button" className="btn-link">
+        {author}
+      </button>
+      on [
       <small>{replyDate}</small>
-      {'] '}
-      <span className="badge badge-pill badge-success">{`${props.reply.data.ups}`}</span>{' '}
-      <span className="badge badge-pill badge-danger">{`${props.reply.data.downs}`}</span>
+]
+      <span className="badge badge-pill badge-success">{`${ups} `}</span>
+      <span className="badge badge-pill badge-danger">{`${downs}`}</span>
       <p />
-      {props.reply.data.body}
-      {props.reply.data.replies.data
-        ? props.reply.data.replies.data.children.map((reply, index) => (
-          <Reply key={index} counter={`${props.counter}-${index + 1}`} reply={reply} />
-        ))
+      {body}
+      {replies.data
+        ? replies.data.children.map((nestedReply, index) => (
+          <Reply
+            key={`${nestedReply.parent_id}-${nestedReply.id}`}
+            counter={`${counter}-${index + 1}`}
+            reply={nestedReply}
+          />
+          ))
         : null}
     </div>
   );
 };
 
-const Comment = (props) => {
-  const { comment } = props;
+Reply.propTypes = {
+  reply: T.object,
+  counter: T.oneOfType([T.number, T.string]),
+};
+
+const Comment = ({ comment }) => {
   if (comment.data.ups === undefined) return null;
   const commentDate = new Date(1000 * comment.data.created).toUTCString();
   return (
     <div className="jumbotron jumbotron-fluid">
       <div className="container">
         <div className="lead text-left">
-          <span className="badge badge-pill badge-success">{`${comment.data.ups}`}</span>{' '}
-          <span className="badge badge-pill badge-danger">{`${comment.data.downs}`}</span>{' '}
-          <a href="">{`${comment.data.author} `}</a>
-          {' on '}
+          <span className="badge badge-pill badge-success">{`${comment.data.ups} `}</span>
+          <span className="badge badge-pill badge-danger">{`${comment.data.downs} `}</span>
+          <button className="btn-link" type="button">
+            {`${comment.data.author} `}
+          </button>
+          on
           <small>{commentDate}</small>
           <p />
           <small>
@@ -44,12 +59,20 @@ const Comment = (props) => {
         </div>
         {comment.data.replies
           ? comment.data.replies.data.children.map((reply, index) => (
-            <Reply key={index} counter={index + 1} reply={reply} />
-          ))
+            <Reply
+              key={`${reply.parent_id}-${reply.id}`}
+              counter={index + 1}
+              reply={reply}
+            />
+            ))
           : null}
       </div>
     </div>
   );
+};
+
+Comment.propTypes = {
+  comment: T.object,
 };
 
 export default Comment;

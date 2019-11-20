@@ -1,35 +1,33 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Provider } from 'react-redux';
-import { asyncSessionStorage } from 'redux-persist/storages';
+import localStorage from 'redux-persist/lib/storage';
+import { PersistGate } from 'redux-persist/integration/react';
 
 import Reddit from './app/index';
 import appStore from './app/core/store/index';
 
-class App extends Component {
-  constructor() {
-    super();
-    this.state = {
-      isReady: false,
+const App = () => {
+  const [isReady, setIsReady] = useState(false);
+  const [store, setStore] = useState({});
+
+  useEffect(() => {
+    const setupStore = async () => {
+      setStore(await appStore(localStorage, {}));
     };
-    this.store = null;
+    setupStore().then(() => setIsReady(true));
+  }, []);
+
+  if (!isReady) {
+    return <h1>Loading...</h1>;
   }
 
-  async componentWillMount() {
-    this.store = await appStore(asyncSessionStorage, {});
-    this.setState({ isReady: true });
-  }
-
-  render() {
-    if (this.state.isReady === false) {
-      return <div>App is getting ready....</div>;
-    }
-
-    return (
-      <Provider store={this.store}>
+  return (
+    <Provider store={store.store}>
+      <PersistGate loading={null} persistor={store.persistor}>
         <Reddit />
-      </Provider>
-    );
-  }
-}
+      </PersistGate>
+    </Provider>
+  );
+};
 
 export default App;

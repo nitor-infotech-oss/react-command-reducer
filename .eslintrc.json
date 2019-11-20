@@ -1,10 +1,22 @@
 {
-    "extends": "airbnb",
-    "rules": {
-        "linebreak-style": [1, "windows"],
-        "new-cap": [1, { "newIsCap": false }],
-        "react/prop-types": [1],
-        "react/jsx-filename-extension": [0]
-    },
-    "plugins": ["react", "jsx-a11y", "import"]
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true,
+    "mocha": true,
+    "jest": true
+  },
+  "extends": ["eslint:recommended", "airbnb", "prettier"],
+  "plugins": ["react", "jsx-a11y", "import"],
+  "rules": {
+    "react/jsx-props-no-spreading": [0],
+    "react/forbid-prop-types": [0],
+    "react/require-default-props": [0],
+    "react/prop-types": [1],
+    "react/jsx-filename-extension": [0],
+    "new-cap": "warn",
+    "import/no-named-as-default-member": [0],
+    "camelcase": "warn",
+    "global-require": "warn"
+  }
 }

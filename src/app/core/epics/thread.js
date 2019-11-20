@@ -1,42 +1,52 @@
 import 'rxjs';
 import { of } from 'rxjs/observable/of';
-import { Observable } from 'rxjs/Observable';
+import { fromPromise } from 'rxjs-compat/observable/fromPromise';
+import { filter, switchMap, map, catchError } from 'rxjs/operators';
 
 import ThreadService from '../services/thread-service';
-import { ActionTypes } from '../actions/thread';
-import * as threadActions from '../actions/thread';
+import {
+  ActionTypes,
+  getThreadFail,
+  getThreadSuccess,
+  getPostSuccess,
+  getPostFail,
+} from '../actions/thread';
 
 const threadService = new ThreadService();
 
 export const threadEpic = action$ =>
-  action$
-    .ofType(ActionTypes.GET_THREAD)
-    .map(action => action.payload)
-    .switchMap(slug =>
-      Observable.fromPromise(threadService.getThread(slug))
-        .map((result) => {
+  action$.pipe(
+    filter(action => action.type === ActionTypes.GET_THREAD),
+    switchMap(action => {
+      return fromPromise(threadService.getThread(action.payload)).pipe(
+        map(result => {
           if (result.data) {
             const threads = result.data.children;
-            return new threadActions.getThreadSuccess(threads);
+            return getThreadSuccess(threads);
           }
-          return new threadActions.getThreadFail('Not able to find thread');
-        })
-        .catch(error => of(new threadActions.getThreadFail(error))),
-    );
+          return getThreadFail('Not able to find thread');
+        }),
+        catchError(error => of(getThreadFail(error))),
+      );
+    }),
+  );
 
 export const postEpic = action$ =>
-  action$
-    .ofType(ActionTypes.GET_THREAD_POST)
-    .map(action => action.payload)
-    .switchMap(postDetails =>
-      Observable.fromPromise(
-        threadService.getPost(postDetails.threadSlug, postDetails.postId),
-      ).map((result) => {
-        if (result) {
-          const post = result[0];
-          const comments = result[1];
-          return new threadActions.getPostSuccess({ post, comments });
-        }
-        return new threadActions.getPostFail('Not able to find post');
-      }),
-    );
+  action$.pipe(
+    filter(action => action.type === ActionTypes.GET_THREAD_POST),
+    switchMap(({ payload }) => {
+      return fromPromise(
+        threadService.getPost(payload.threadSlug, payload.postId),
+      ).pipe(
+        map(result => {
+          if (result) {
+            const post = result[0];
+            const comments = result[1];
+            return getPostSuccess({ post, comments });
+          }
+          return getPostFail('Not able to find post');
+        }),
+        catchError(error => of(getPostFail(error))),
+      );
+    }),
+  );

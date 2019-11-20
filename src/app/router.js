@@ -7,8 +7,13 @@ const Router = () => (
   <BrowserRouter>
     <div>
       <Switch>
-        {Containers.map((route, index) => (
-          <Route exact={route.exact} path={route.path} component={route.main} key={index} />
+        {Containers.map(route => (
+          <Route
+            exact={route.exact}
+            path={route.path}
+            component={route.main}
+            key={route.path}
+          />
         ))}
       </Switch>
     </div>

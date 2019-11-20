@@ -1,63 +1,73 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import Post from '../components/Post';
-import * as threadActions from '../core/actions/thread';
+import threadActions from '../core/actions/thread';
 
-class HomeContainer extends React.Component {
-  constructor() {
-    super();
+const HomeContainer = ({
+  history,
+  match,
+  getThread,
+  posts,
+  searchTerm,
+  isLoading,
+}) => {
+  const slug = match.params ? match.params.slug : null;
 
-    this.state = {
-      isReady: false,
-    };
+  useEffect(() => {
+    getThread(slug);
+  }, [slug]);
 
-    this.showComments = (postId) => {
-      this.props.history.go(`/${this.props.searchTerm}/${postId}`);
-    };
-  }
+  const showComments = postId => {
+    history.go(`/${searchTerm}/${postId}`);
+  };
 
-  componentWillMount() {
-    const slug = this.props.match.params ? this.props.match.params.slug : null;
+  // match.params.slug === undefined ? {} : isLoading ? {} : posts.length <= 0 ? {} : {};
 
-    if (slug) {
-      this.props.dispatch(new threadActions.getThread(slug));
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const { slug } = nextProps.match.params;
-    if (slug) {
-      if (slug !== this.props.match.params.slug) {
-        this.props.dispatch(new threadActions.getThread(slug));
-      }
-    }
-  }
-
-  render() {
-    if (this.props.match.params.slug === undefined) {
-      return <div className="alert alert-warning">{'Enter reddit thread name to search!'}</div>;
-    }
-    if (this.props.posts.length <= 0) {
-      return <div className="alert alert-danger">{'Sorry, nothing found for your search!'}</div>;
-    }
+  if (match.params.slug === undefined) {
     return (
-      <div className="list-group">
-        {this.props.posts.map(post => (
-          <Post
-            onCommentClick={this.showComments}
-            term={this.props.searchTerm}
-            key={post.data.id}
-            {...post.data}
-          />
-        ))}
+      <div className="alert alert-warning">
+        Enter reddit thread name to search!
       </div>
     );
   }
-}
+  if (isLoading) {
+    return <div className="alert alert-info">searching...</div>;
+  }
+  if (posts.length <= 0) {
+    return (
+      <div className="alert alert-danger">
+        Sorry, nothing found for your search!
+      </div>
+    );
+  }
 
-const mapStateToProps = (state) => {
+  return (
+    <div className="list-group">
+      {posts.map(post => (
+        <Post
+          onCommentClick={showComments}
+          term={searchTerm}
+          key={post.data.id}
+          {...post.data}
+        />
+      ))}
+    </div>
+  );
+};
+
+HomeContainer.propTypes = {
+  history: PropTypes.object,
+  match: PropTypes.object,
+  getThread: PropTypes.func,
+  posts: PropTypes.array,
+  searchTerm: PropTypes.string,
+  isLoading: PropTypes.bool,
+};
+
+const mapStateToProps = state => {
   const props = {
     searchTerm: state.thread.threadSlug,
     posts: state.thread.posts,
@@ -66,6 +76,14 @@ const mapStateToProps = (state) => {
   return props;
 };
 
-const Home = withRouter(connect(mapStateToProps)(HomeContainer));
+const mapDispatchToProps = dispatch => {
+  return {
+    getThread: slug => dispatch(threadActions.getThread(slug)),
+  };
+};
+
+const Home = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(HomeContainer),
+);
 
 export default Home;

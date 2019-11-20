@@ -1,5 +1,5 @@
 const typeCache = {};
-const type = (label) => {
+const type = label => {
   if (typeCache[label]) {
     throw new Error(`Action type ${label} is not unique`);
   }
