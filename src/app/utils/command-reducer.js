@@ -11,12 +11,15 @@ export default class CommandReducer {
 
   reducer() {
     return (state, action) => {
-      return this.map.reduce((prevState, mapping) => {
-        if (action.type === mapping.type) {
-          return mapping.command(prevState, action.payload);
-        } 
-        return prevState;
-      }, typeof state === 'undefined' ? this.initialState : state);
+      return this.map.reduce(
+        (prevState, mapping) => {
+          if (action.type === mapping.type) {
+            return mapping.command(prevState, action.payload);
+          }
+          return prevState;
+        },
+        typeof state === 'undefined' ? this.initialState : state,
+      );
     };
   }
 }
