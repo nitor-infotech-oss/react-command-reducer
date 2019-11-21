@@ -18,7 +18,7 @@ const HomeContainer = ({
 
   useEffect(() => {
     getThread(slug);
-  }, [slug]);
+  }, [slug, getThread]);
 
   const showComments = postId => {
     history.go(`/${searchTerm}/${postId}`);

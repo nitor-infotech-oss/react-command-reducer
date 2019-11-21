@@ -6,15 +6,17 @@ import { PersistGate } from 'redux-persist/integration/react';
 import Reddit from './app/index';
 import appStore from './app/core/store/index';
 
+const setupStore = async () => appStore(localStorage, {});
+
 const App = () => {
   const [isReady, setIsReady] = useState(false);
-  const [store, setStore] = useState({});
+  const [storeProvider, setStoreProvider] = useState({});
 
   useEffect(() => {
-    const setupStore = async () => {
-      setStore(await appStore(localStorage, {}));
-    };
-    setupStore().then(() => setIsReady(true));
+    setupStore().then(provider => {
+      setStoreProvider(provider);
+      setIsReady(true);
+    });
   }, []);
 
   if (!isReady) {
@@ -22,8 +24,8 @@ const App = () => {
   }
 
   return (
-    <Provider store={store.store}>
-      <PersistGate loading={null} persistor={store.persistor}>
+    <Provider store={storeProvider.store}>
+      <PersistGate loading={null} persistor={storeProvider.persistor}>
         <Reddit />
       </PersistGate>
     </Provider>

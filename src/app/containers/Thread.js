@@ -25,10 +25,11 @@ const ThreadContainer = ({
   comments,
   post,
 }) => {
+  const { slug, id } = match.params;
+
   useEffect(() => {
-    const { slug, id } = match.params;
     getPost(slug, id);
-  }, []);
+  }, [getPost, slug, id]);
 
   if (!post) {
     return <div>Looking for your post....</div>;
