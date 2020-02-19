@@ -1,5 +1,7 @@
 # RxJS with React and Redux
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/nitor-infotech-oss/react-command-reducer.svg)](https://greenkeeper.io/)
+
 This is a sample application which uses capabilities of RxJs (reactive programming) with React and Redux.
 
 ## Command Reducer
